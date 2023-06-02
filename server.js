@@ -18,7 +18,7 @@ app.use("/images_uploads", express.static("images_uploads"))
 
 
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Gear 1" });
+  res.json({ message: "Welcome to Good Habits" });
 });
 
 // require("./app/routes/admin")(app);
