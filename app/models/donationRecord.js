@@ -2,6 +2,8 @@
 const {sql} = require("../config/db.config");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const fastcsv = require("fast-csv");
+const fs = require("fs");
 
 const donationRecord = function (donationRecord) {
 	this.parent_id = donationRecord.parent_id;
@@ -218,4 +220,34 @@ donationRecord.delete = async (req, res) => {
 		});
 	}
 }
+donationRecord.exportRecord = async (req, res) => {
+	const Data = await sql.query(`SELECT COUNT(*) AS count FROM "donation_record"`);
+	sql.query(`SELECT * FROM "donation_record"`, (err, result) => {
+		if (err) {
+			console.log(err);
+			res.json({
+				message: "Try Again",
+				status: false,
+				err
+			});
+		} else {
+			const jsonData = JSON.parse(JSON.stringify(result.rows));
+			console.log("jsonData", jsonData);
+			const ws = fs.createWriteStream(`./images_uploads/record${Date.now()}.csv`);
+			const file = fastcsv
+			  .write(jsonData, { headers: true })
+			  .on("finish", function() {
+				console.log("Export to CSV Successfully!");
+			  })
+			  .pipe(ws);
+			res.json({
+				message: "Donation Record Exported File",
+				status: true,
+				total: Data.rows[0].count,
+				result: `${file.path}`
+			});
+		}
+	});
+}
+
 module.exports = donationRecord;
