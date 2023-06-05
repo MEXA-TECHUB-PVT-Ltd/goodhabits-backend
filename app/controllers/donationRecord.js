@@ -11,6 +11,15 @@ exports.create = (req, res) => {
 };
 
 
+exports.exportRecord = (req, res) => {
+  if (!req.body) {
+    res.json({
+      message: "Content can not be empty!",
+      status: false,
+     });
+  }  
+  donationRecord.exportRecord( req, res);
+};
 exports.viewSpecific = (req, res) => {
   if (!req.body) {
     res.json({

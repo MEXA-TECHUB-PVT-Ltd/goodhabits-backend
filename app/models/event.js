@@ -43,11 +43,12 @@ event.create = async (req, res) => {
 			} else {
 				const { name, location, date,time ,deadline, 
 					activity_cost, payment_date,  } = req.body;
+					const deadLine  = new Date(deadline);
 				const query = `INSERT INTO "event"
 				 (id,name, location,date,time,deadline ,activity_cost , payment_date ,createdAt ,updatedAt )
                             VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, 'NOW()','NOW()' ) RETURNING * `;
 				const foundResult = await sql.query(query,
-					[name, location, date, time, deadline, activity_cost, payment_date ]);
+					[name, location, date, time, deadLine, activity_cost, payment_date ]);
 				if (foundResult.rows.length > 0) {
 					if (err) {
 						res.json({
@@ -153,7 +154,7 @@ event.exportEvent = async (req, res) => {
 				message: "Active Event Exported File",
 				status: true,
 				total: Data.rows[0].count,
-				result: `localhost:3008/${file.path}`
+				result: `${file.path}`
 			});
 		}
 	});
