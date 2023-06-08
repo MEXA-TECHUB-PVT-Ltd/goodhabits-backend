@@ -11,6 +11,7 @@ module.exports = app => {
     router.post("/verifyEmail", Auth.verifyEmail);
     router.post("/verifyOTP", Auth.verifyOTP)
     router.post("/newPassword", Auth.newPassword)
+    router.post("/send_email", Auth.sendEmail);
 
     // router.post("/google_sign_in", Auth.GooglesignIn);
     router.put("/update_profile",upload.single('image'), Auth.updateProfile);
