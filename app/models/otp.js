@@ -3,7 +3,7 @@ const { sql } = require("../config/db.config");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");;
-const emailOTPBody = require("../utils/emailOTPBody")
+const emailBody = require("../utils/emailBody")
 
 const otp = function (otp) {
     this.email = admin.email;
@@ -17,6 +17,57 @@ const transporter = nodemailer.createTransport({
         pass: 'fzcnqvtxfzxarjxr',
     },
 });
+// 
+otp.sendEmail = async (req, res) => {
+    try {
+        if (!req.body.email || req.body.email === '') {
+            res.json({
+                message: "Please Enter Email Address",
+                status: false,
+            });
+        } else {
+            const found_email_query = 'SELECT * FROM "user" WHERE email = $1'
+            const found = await sql.query(found_email_query, [req.body.email])
+            if (found.rowCount > 0) {
+
+                let sendEmailResponse = await transporter.sendMail({
+                    from: 'verification@goodHabits.com',
+                    to: req.body.email,
+                    subject: req.body.subject,
+                    html: emailBody(req.body.message,req.body.event_name , "#746C70")
+
+
+                });
+                console.log(sendEmailResponse);
+                if (sendEmailResponse.accepted.length > 0) {
+                    res.json({
+                        message: `Sent a verification email to ${req.body.email}`,
+                        success: true,
+                    });
+                }
+                else {
+                    res.json({
+                        status:false,
+                        message: `Could not send email, Try Again`,
+                    });
+                }
+            } else {
+                res.json({
+                    status:false,
+                    message: `Provided Email isn't registered`,
+                });
+            }
+
+        }
+    }
+    catch (err) {
+        console.log(err)
+        res.status(500).json({
+            message: `Internal server error occurred`,
+            success: false,
+        });
+    }
+}
 
 const sendOTPVerificationEmail = async (email, res) => {
     try {

@@ -37,7 +37,7 @@ require("./app/routes/staffPermissions")(app);
 require("./app/routes/Permissions")(app);
 
 // set port, listen for requests
-const PORT = process.env.PORT || 3007;
+const PORT = process.env.PORT || 3009;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });

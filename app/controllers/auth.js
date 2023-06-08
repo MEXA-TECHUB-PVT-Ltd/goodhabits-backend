@@ -38,6 +38,15 @@ exports.verifyEmail = (req, res) => {
   }  
   otp.VerifyEmail( req, res);
 };
+exports.sendEmail = (req, res) => {
+  if (!req.body) {
+    res.json({
+      message: "Content can not be empty!",
+      status: false,
+     });
+  }  
+  otp.sendEmail( req, res);
+};
 exports.newPassword = (req, res) => {
   if (!req.body) {
     res.json({
