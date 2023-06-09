@@ -25,6 +25,7 @@ event.create = async (req, res) => {
 		deadline timestamp ,
         activity_cost text,
 		payment_date text,
+		event_status  text,
         createdAt timestamp,
         updatedAt timestamp ,
         PRIMARY KEY (id))  ` , async (err, result) => {
@@ -42,18 +43,18 @@ event.create = async (req, res) => {
 				});
 			} else {
 				const { name, location, date,time ,deadline, 
-					activity_cost, payment_date,  } = req.body;
+					activity_cost, payment_date,event_status  } = req.body;
 					const deadLine  = new Date(deadline);
 				const query = `INSERT INTO "event"
-				 (id,name, location,date,time,deadline ,activity_cost , payment_date ,createdAt ,updatedAt )
+				 (id,name, location,date,time,deadline ,activity_cost , payment_date,event_status ,createdAt ,updatedAt )
                             VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, 'NOW()','NOW()' ) RETURNING * `;
 				const foundResult = await sql.query(query,
-					[name, location, date, time, deadLine, activity_cost, payment_date ]);
+					[name, location, date, time, deadLine, activity_cost, payment_date,event_status ]);
 				if (foundResult.rows.length > 0) {
 					if (err) {
 						res.json({
 							message: "Try Again",
-							payment_date: false,
+							status: false,
 							err
 						});
 					}
@@ -132,7 +133,37 @@ event.viewAll = async (req, res) => {
 }
 event.exportEvent = async (req, res) => {
 	const Data = await sql.query(`SELECT COUNT(*) AS count FROM "event"`);
-	sql.query(`SELECT * FROM "event" WHERE deadline <= $1`,["NOW"], (err, result) => {
+	sql.query(`SELECT * FROM "event" `, (err, result) => {
+		if (err) {
+			console.log(err);
+			res.json({
+				message: "Try Again",
+				status: false,
+				err
+			});
+		} else {
+			const jsonData = JSON.parse(JSON.stringify(result.rows));
+			console.log("jsonData", jsonData);
+			const ws = fs.createWriteStream(`./images_uploads/ActiveEvent${Date.now()}.csv`);
+			const file = fastcsv
+			  .write(jsonData, { headers: true })
+			  .on("finish", function() {
+				console.log("Export to CSV Successfully!");
+			  })
+			  .pipe(ws);
+			res.json({
+				message: "Active Event Exported File",
+				status: true,
+				total: Data.rows[0].count,
+				result: `${file.path}`
+			});
+		}
+	});
+}
+
+event.exportEvent_Active = async (req, res) => {
+	const Data = await sql.query(`SELECT COUNT(*) AS count FROM "event"`);
+	sql.query(`SELECT * FROM "event" WHERE event_status = $1`,["active"], (err, result) => {
 		if (err) {
 			console.log(err);
 			res.json({
@@ -175,7 +206,8 @@ event.update = async (req, res) => {
 		const olddeadline = eventData.rows[0].deadline;
 		const oldactivity_cost = eventData.rows[0].activity_cost;
 		const oldpayment_date = eventData.rows[0].payment_date;
-		let { id, name, location, date,time, deadline , activity_cost, payment_date  } = req.body;
+		const oldevent_status = eventData.rows[0].event_status;
+		let { id, name, location, date,time, deadline , activity_cost, payment_date,event_status  } = req.body;
 		if (name === undefined || name === '') {
 			name = oldName;
 		}
@@ -197,10 +229,14 @@ event.update = async (req, res) => {
 		if (payment_date === undefined || payment_date === '') {
             payment_date = oldpayment_date;
         }
+		if (event_status === undefined || payment_date === '') {
+            event_status = oldevent_status;
+        }
+
 		sql.query(`UPDATE "event" SET name = $1, location = $2, 
 		date = $3, time = $4, deadline = $5 , activity_cost = $6,
-		payment_date = $7 WHERE id = $8;`,
-			[name, location, date, time, deadline, activity_cost, payment_date , id], async (err, result) => {
+		payment_date = $7, event_status = $8 WHERE id = $9;`,
+			[name, location, date, time, deadline, activity_cost, payment_date, event_status , id], async (err, result) => {
 				if (err) {
 					console.log(err);
 					res.json({

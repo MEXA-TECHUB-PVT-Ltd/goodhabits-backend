@@ -86,6 +86,7 @@ CREATE TABLE IF NOT EXISTS public.event (
         deadline timestamp ,
         activity_cost text,
         payment_date text,
+        event_status text,
         createdAt timestamp,
         updatedAt timestamp ,
         PRIMARY KEY (id));

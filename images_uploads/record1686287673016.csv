@@ -1,0 +1,3 @@
+id,parent_id,full_name,call,telephone,donation_method,donation_amount,donation_date,principal,createdat,updatedat
+2,1,arsalan,12,03425505565,cash,320,6-06-2023,none!,2023-06-01T06:34:11.517Z,2023-06-01T06:34:11.517Z
+1,1,ihtesham,15,03425505565,cash,120,1-06-2023,none!,2023-06-01T06:33:43.704Z,2023-06-01T06:33:43.704Z
