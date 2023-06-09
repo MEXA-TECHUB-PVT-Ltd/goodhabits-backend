@@ -128,7 +128,7 @@ goodsInventory.exportGoods = async (req, res) => {
 				message: "goods Inventory Exported File",
 				status: true,
 				total: Data.rows[0].count,
-				result: `localhost:3008/${file.path}`
+				result: `${file.path}`
 			});
 		}
 	});

@@ -11,8 +11,9 @@ router.put("/update", event.update);
 router.delete("/delete/:id" , event.delete)
 router.post("/register_event", event.registration);
 router.post("/charge_record", event.ChargeRecord);
-router.get("/export_active_event", event.exportEvent);
+router.get("/export_all_event", event.exportEvent);
 router.post("/view_all_registration", event.viewAllRegistration);
+router.get("/export_active_event", event.exportEvent_Active);
 
 app.use("/event", router);
 };

@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");;
 const emailBody = require("../utils/emailBody")
+const emailOTPBody = require("../utils/emailOTPBody")
 
 const otp = function (otp) {
     this.email = admin.email;

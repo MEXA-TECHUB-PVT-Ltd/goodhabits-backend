@@ -11,7 +11,15 @@ exports.create = (req, res) => {
   event.create( req, res);
 };
 
-
+exports.exportEvent_Active = (req, res) => {
+  if (!req.body) {
+    res.json({
+      message: "Content can not be empty!",
+      status: false,
+     });
+  }  
+  event.exportEvent_Active( req, res);
+};
 exports.viewSpecific = (req, res) => {
   if (!req.body) {
     res.json({
